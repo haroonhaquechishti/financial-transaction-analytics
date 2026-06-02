@@ -1,71 +1,143 @@
 # Financial Transaction Analytics & Anomaly Detection
 
+> Spending pattern analysis and automated fraud signal detection across 5,347 financial transactions using Python, SQL, and Power BI.
+
+---
+
+## Results at a Glance
+
+| Metric | Value |
+|---|---|
+| Transactions Analyzed | 5,347 |
+| Annual Spend Tracked | $88,827 |
+| Anomalies Detected | 37 flagged (92% recall) |
+| Savings Identified | $33,067/year |
+| Top Overspend Categories | Shopping & Food |
+| Peak Spend Month | November ($15,983) |
+
+---
+
 ## Project Overview
-Most people have no idea where their money actually goes. This project processes 5,000+ financial transactions to uncover spending patterns, build an interactive savings simulator, and automatically flag anomalous transactions — putting the power of financial intelligence into a simple Power BI dashboard.
 
-## Business Problem
-Two questions drive this project:
+Most people have no idea where their money actually goes. This project processes 5,347 financial transactions to uncover spending patterns, build an interactive savings simulator, and automatically flag anomalous transactions.
+
+**Two core questions:**
 1. **Where is money being wasted?** — Category-level spending analysis with savings opportunity identification
-2. **What looks unusual?** — Anomaly detection to surface irregular or potentially fraudulent transactions
+2. **What looks unusual?** — Statistical anomaly detection to surface irregular or potentially fraudulent transactions
 
-## Dataset
-- 5,000+ synthetic credit card transactions across 12 months
-- Features: transaction date, merchant, category, amount, frequency
-- 8 spending categories: Housing, Food, Transport, Entertainment, Shopping, Health, Utilities, Subscriptions
+---
+
+## Spending by Category
+
+![Spend by Category](spend_by_category.png)
+
+Shopping accounts for 34.7% of total spend ($30,798), followed by Housing as the largest fixed cost. Food and Entertainment show the highest month-over-month variance.
+
+---
+
+## Monthly Spend Trend
+
+![Monthly Trend](monthly_trend.png)
+
+Clear seasonal pattern with November peak ($15,983) driven by holiday shopping. April shows lowest spend ($3,523). Average monthly spend: $7,402.
+
+---
+
+## Anomaly Detection Results
+
+![Anomaly Detection](anomaly_detection.png)
+
+**Method:** Rolling mean + 2.5x rolling standard deviation per category  
+**37 anomalous transactions** identified across 12 months  
+**92% recall rate** — captures the vast majority of genuine anomalies  
+Anomalous spend represents 49.2% of total by value — concentrated in spike events
+
+---
+
+## Savings Opportunity Analysis
+
+![Savings Opportunity](savings_opportunity.png)
+
+**$33,067 in annual savings identified** across top-2 overspend categories:
+- Shopping: spike months and discretionary purchases above baseline
+- Food: recurring above-average spend vs category norm
+
+Recommended action: Budget alerts for flagged categories + review of service contracts
+
+---
+
+## Spend Heatmap — Category x Month
+
+![Heatmap](heatmap.png)
+
+Visualizes spending intensity across all 8 categories and 12 months. Darker cells = higher spend. Identifies seasonality patterns and persistent overspend periods by category.
+
+---
 
 ## Methodology
 
-### Step 1 — Data Cleaning & Categorization (Python + SQL)
-- Loaded raw transaction data using Pandas
-- Cleaned missing values, standardized merchant names, parsed dates
-- Categorized all transactions into 8 business-relevant buckets using SQL classification logic
+### Step 1 — Data Generation (Python)
+- `generate_transactions.py` creates 5,347 realistic transactions with seasonal variation
+- 8 spending categories with realistic baseline amounts and variance
+- 37 anomalies injected at known positions for validation
 
-### Step 2 — Anomaly Detection (Python)
-Applied statistical anomaly detection to flag irregular transactions:
-- Calculated rolling mean and standard deviation per category
-- Flagged transactions exceeding 2.5 standard deviations from category baseline
-- Result: **37 irregular transactions flagged** across the 12-month period
-- Anomaly types detected: unusual single-transaction amounts, off-pattern timing, duplicate-like charges
+### Step 2 — Analysis (Python — `transaction_analysis.ipynb`)
+- Data loading, cleaning, and category validation
+- Spending breakdown with visualizations
+- Statistical anomaly detection (rolling mean + 2.5σ)
+- Savings opportunity quantification
 
-### Step 3 — Savings Analysis (Python)
-- Identified spending categories with highest month-over-month variance
-- Calculated discretionary vs. non-discretionary spend ratio
-- Pinpointed **$4,200 in annual savings opportunities** across recurring discretionary categories
+### Step 3 — SQL Analytics (`transaction_queries.sql`)
+- Total and average spend by category
+- Monthly trend queries
+- Top 10 highest transactions
+- Anomaly flag queries
+- Month-over-month change by category
 
-### Step 4 — Interactive Dashboard (Power BI)
-- Monthly burn rate by category with trend lines
-- **What-if savings simulator** — interactive sliders let users adjust spending by category and see projected annual savings update in real time
-- Anomaly flag panel — highlighted transactions with deviation scores
-- Built for non-technical stakeholders — no data literacy required to use
+### Step 4 — Dashboard (`dashboard_guide.md`)
+- Power BI import and data model setup
+- 5 visuals with exact field mappings
+- What-if savings simulator using numeric parameter slicer
+- 3 DAX measures: Total Spend, Anomaly Count, Projected Annual Savings
 
-## Key Findings
-- Top overspend categories: Entertainment (+34% above baseline) and Subscriptions (+28%)
-- 37 transactions flagged as anomalous — 12 identified as likely duplicate charges
-- Reducing discretionary spend to category averages yields $4,200/year in savings
-
-## Business Impact
-- **$4,200 in identified annual savings opportunities**
-- **37 irregular transactions flagged** via automated anomaly detection
-- Interactive simulator enables real-time financial planning without spreadsheets
+---
 
 ## Tools & Technologies
-- **Python** — data cleaning, categorization, anomaly detection (Pandas, NumPy, SciPy)
-- **SQL** — transaction classification and aggregation queries
-- **Power BI** — interactive dashboard and what-if simulator
+
+`Python` `Pandas` `NumPy` `Matplotlib` `Seaborn` `SQL` `Power BI` `DAX`
+
+---
 
 ## Files
-```
-financial-transaction-analytics/
-├── data/               # Synthetic transaction dataset (CSV)
-├── sql/                # SQL categorization and aggregation queries
-├── notebooks/          # Python cleaning and anomaly detection
-├── dashboard/          # Power BI .pbix file
-├── screenshots/        # Dashboard screenshots
-└── README.md
-```
+
+| File | Description |
+|---|---|
+| `generate_transactions.py` | Generates synthetic transaction dataset |
+| `transaction_analysis.ipynb` | Full analysis notebook |
+| `transactions.csv` | Generated dataset (5,347 rows) |
+| `transaction_queries.sql` | SQL analytics queries |
+| `dashboard_guide.md` | Power BI build instructions |
+| `spend_by_category.png` | Category spending chart |
+| `monthly_trend.png` | Monthly trend line chart |
+| `anomaly_detection.png` | Anomaly detection results |
+| `savings_opportunity.png` | Savings analysis chart |
+| `heatmap.png` | Category x month heatmap |
+
+---
 
 ## How to Run
-1. Clone the repository
-2. Run the Jupyter notebook in `/notebooks` for data cleaning and anomaly detection
-3. Run SQL scripts in `/sql` for aggregations
-4. Open `/dashboard/transaction_dashboard.pbix` in Power BI Desktop
+
+```bash
+# Install dependencies
+pip install pandas numpy matplotlib seaborn
+
+# Generate dataset
+python generate_transactions.py
+
+# Open notebook
+jupyter notebook transaction_analysis.ipynb
+```
+
+---
+
+*Part of Haroon Haque Chishti's Business Analytics Portfolio — github.com/haroonhaquechishti*
